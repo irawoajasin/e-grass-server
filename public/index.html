@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>touch e-grass</title>
+</head>
+<body>
+    <h1>e-grass api</h1>
+    <h2>for when you need some e-grass to touch on your website</h2>
+    <p>this api houses a collection of dithered images of grass for you to copy and paste on your website.</p>
+    <p>click the button and copy and paste the image for your use</p>
+
+    <button id="btn">display e-grass</button>
+    <br><br>
+    <div id="imageContainer"></div>
+
+    <!--script for displaying a random image-->
+    <script>
+        const imageContainer = document.getElementById("imageContainer");
+        const button = document.getElementById("btn");
+
+        btn.addEventListener('click', async () => {
+            const res = await fetch('/api/grass');
+            const images = await res.json();
+            const random = images[Math.floor(Math.random() * images.length)];
+            imageContainer.innerHTML = `<img src="${random.data}" width="${random.width}" height="${random.height}" alt="dithered grass to touch!">`;
+        });
+        
+    </script>
+
+    <hr>
+
+    <h2> wanna upload your own grass image? </h2>
+    <p>have you taken or found a nice pic of grass recently? you should totally upload it below</p>
+    <p>honor system, pls make sure your image is actually of grass, i have no way of checking</p>
+    <form id="uploadForm" enctype="multipart/form-data">
+        <input type="file" name="grassImage" accept="image/*" required>
+        <button type="submit">upload e-grass</button>
+    </form>
+
+    <!--script for image upload-->
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+
+            const res = await fetch('/upload', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (res.ok) {
+                const newImage = await res.json();
+                alert('thank you for your donation of e-grass');
+                imageContainer.innerHTML = `<img src="${newImage.data}" width="${newImage.width}" height="${newImage.height}" alt="e-grass">`;
+            } else {
+                alert('Error uploading image.');
+            }
+        });
+    </script>
+    
+</body>
+</html>
